@@ -69,8 +69,9 @@ public class Player {
     public void initializeInventory() {
         items.clear();
         items.add(new Item("Health Potion","Heals 40 HP.",40,3));
-        items.add(new Item("Shield Token","Nullifies all damage for next two turns.",0,1));
+        items.add(new Item("Shield Token","Nullifies all damage twice.",0,1));
         items.add(new Item("Power Flask","Your next attack deals +150% damage.",0,2));
+        items.add(new Item("Grebbory's Assignment Resubmission", "Heals all missing HP.",100,1));
 
         selectedItemIndex = 0;
     }
@@ -90,6 +91,12 @@ public class Player {
         return maxHP;
     }
 
+    // sets the player's max HP to a different value
+    public void setMaxHP(int newMaxHP) {
+        this.maxHP = newMaxHP;
+        this.hp = newMaxHP;
+    }
+
     // sets the player image
     public void setImage(BufferedImage img) {
         this.image = img;
@@ -100,25 +107,32 @@ public class Player {
         this.flashImage = img;
     }
 
-    // returns the players max HP
+    // damage the player
     public void damage(int amount) {
         long now;
         
         now = System.currentTimeMillis();
 
+        // if shield active, deal no damage
         if (shieldActive) {
             amount = 0;
         }
 
+        // check for iframes
         if (now > invincibleUntil) {
             hp -= amount;
+            GamePanel.playSoundEffect("Sounds/damagetaken.wav");
+
             if (hp < 0) {
                 hp = 0;
             }
+
+            // reset iframes
             invincibleUntil = now + 500;
             flashing = true;
             flashTimer = 30;
 
+            // if shield active, decrease uses
             if (shieldActive) {
                 shieldTurns--;
                 if (shieldTurns <= 0) {
