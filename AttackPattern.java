@@ -1,6 +1,6 @@
 /*
  * Author: Michael Zhang and Bryan Yao
- * Date: 2025-01-08
+ * Date: 2025-01-16
  * Description: This abstract class defines the structure for attack patterns in the game.
  */
 public abstract class AttackPattern {
