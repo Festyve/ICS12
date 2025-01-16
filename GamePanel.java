@@ -586,7 +586,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         playerStartY = battleBox.y + battleBox.height / 2 - 12;
 
         // reset all the variables, creating new instances of all objects and clearing all lists
-        player = new Player(playerStartX, playerStartY, 25, 25, 100, playerImage, flashImage,  playerImage, flashImage, jetImage, jetFlashImage);
+        player = new Player(playerStartX, playerStartY, 25, 25, difficultyHP[difficultyIdx], playerImage, flashImage,  playerImage, flashImage, jetImage, jetFlashImage);
         player.initializeInventory();
         boss = new Boss("GREBBORY ANTONY", 100, bossImage, 0, 0, 150, 150);
         currentAttackPattern = 0;
@@ -1005,7 +1005,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
 
         // show instructions
         g.setColor(Color.WHITE);
-        adjustText = "[LEFT/RIGHT] to change difficulty, [Z] BACK";
+        adjustText = "[UP/DOWN] to change difficulty, [Z] BACK";
         adjW = g.getFontMetrics().stringWidth(adjustText);
         g.drawString(adjustText, getWidth() / 2 - adjW / 2, getHeight() / 2 + 300);
     }
@@ -1677,6 +1677,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         // combine various modifiers with the base damage
         finalDamage = Math.max(finalDamage, (int) ((baseDamage + player.getNextAttackBoost()) * dmgMod * playerDamageModifier));
         boss.damage(finalDamage);
+        playSoundEffect("Sounds/slash.wav");
 
         // show floating damage text over the boss
         damageText = "-" + finalDamage;
@@ -1886,14 +1887,14 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
                 player.setMaxHP(difficultyHP[difficultyIdx]);
 
                 setCurrentState(State.MAIN_MENU);
-            } else if (code == KeyEvent.VK_LEFT) {
+            } else if (code == KeyEvent.VK_UP) {
                 playSoundEffect("Sounds/buttonswitch.wav");
                 // move selection to the left
                 difficultyIdx--;
                 if (difficultyIdx < 0) {
                     difficultyIdx = difficulties.length - 1;
                 }
-            } else if (code == KeyEvent.VK_RIGHT) { 
+            } else if (code == KeyEvent.VK_DOWN) { 
                 playSoundEffect("Sounds/buttonswitch.wav");
                 // move selection to the right
                 difficultyIdx++;
@@ -1907,8 +1908,10 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         else if (currentState == State.PLAYER_MENU) {
             if (code == KeyEvent.VK_LEFT) {
                 selectedOption = (selectedOption - 1 + MENUOPTIONS.length) % MENUOPTIONS.length;
+                playSoundEffect("Sounds/hover.wav");
             } else if (code == KeyEvent.VK_RIGHT) {
                 selectedOption = (selectedOption + 1) % MENUOPTIONS.length;
+                playSoundEffect("Sounds/hover.wav");
             } else if (code == KeyEvent.VK_Z) {
                 choice = MENUOPTIONS[selectedOption];
                 if (choice.equals("FIGHT")) {
