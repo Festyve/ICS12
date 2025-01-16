@@ -1,6 +1,6 @@
 /*
  * Author: Michael Zhang and Bryan Yao
- * Date: 2025-01-08
+ * Date: 2025-01-16
  * Description: This class defines properties for a game item. It provides helper methods for 
  * gathering its name, description, quantity and other properties.
  */
