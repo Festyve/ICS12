@@ -1,6 +1,6 @@
 /*
  * Author: Michael Zhang and Bryan Yao
- * Date: 2025-01-08
+ * Date: 2025-01-16
  * Description: This class implements a homing projectile attack pattern for the boss character.
  * It manages the spawning and behavior of homing bullets that track the player. The attack has
  * configurable parameters such as duration, damage, spawn intervals, and adapts based on the
