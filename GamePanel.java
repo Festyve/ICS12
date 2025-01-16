@@ -163,8 +163,9 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         setBackground(Color.BLACK);
         setFocusable(true);
         addKeyListener(this);
+        setDoubleBuffered(true);
 
-        // timer for updates; calls actionPerformed() repeatedly
+        // timer for updates, calls actionPerformed() repeatedly
         gameTimer = new Timer(15, this);
         gameTimer.start();
 
@@ -190,6 +191,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         initializeLayout();
         createEntities();
         initializeAttackPatterns();
+        playMusic("Sounds/menumusic.wav");
 
         // the initial text in the dialog
         dialogText = "YOU ENCOUNTERED GREBORY ANTONY.";
@@ -241,20 +243,6 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             System.err.println("Error playing the audio file: " + e.getMessage());
         }
-    }
-
-    // switches the music between states
-    public static void switchMusic(String track) {
-        // stop current music if playing
-        if (clip != null) {
-            if (clip.isRunning()) {
-                clip.stop();
-            }
-            clip.close();
-            clip = null;
-        }
-        // play new track
-        playMusic(track);
     }
 
     // plays the sound effect
@@ -566,7 +554,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         player.initializeInventory();
         boss = new Boss("GREBBORY ANTONY", 100, bossImage, 0, 0, 150, 150);
         currentAttackPattern = 0;
-        dialogText = "YOU ENCOUNTERED GREBORY ANTONY.".toUpperCase();
+        dialogText = "YOU ENCOUNTERED GREBBORY ANTONY.".toUpperCase();
         bullets.clear();
         playerBullets.clear();
         bossSpeedModifier = 1.0f;
@@ -1523,13 +1511,14 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
 
     // sets the current state of the game and re-initializes layou
     public void setCurrentState(State newState) {
+        // user has lost, play main menu music
+        if (currentState == State.LOSE && newState == State.MAIN_MENU) {
+            playMusic("Sounds/menumusic.wav");
+        }
+
+        // update the current state, and re-initialize layout based on that state
         currentState = newState;
         initializeLayout();
-
-        // switch the music that plays based on where the user is
-        if (newState == State.MAIN_MENU) {
-            switchMusic("Sounds/menumusic.wav");
-        }
 
         // reset instruction page when switching to or from instructions
         if (newState == State.INSTRUCTIONS) {
@@ -1715,10 +1704,15 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
             // waste the players turn, display some text too
             dialogText = "YOU CALL TECH SUPPORT...\nBOSS: \"THANK YOU FOR CALLING TECH SUPPORT.\"\nGREB: I WILL NOT HELP YOU.";
         } else if (choice.equals("ORZ")) {
-            // double the player's damage for the next attack only
-            playerDamageModifier *= 2.0f;
-            tempDamageBoostActive = true;
-            dialogText = "YOU GO 'ORZ' AND SHOW RESPECT.\nYOUR DETERMINATION SWELLS.\nYOUR NEXT ATTACK DEALS MORE DAMAGE!";
+            if (!tempDamageBoostActive) { 
+                // apply boost only if not already active
+                playerDamageModifier *= 2.0f;
+                tempDamageBoostActive = true;
+                dialogText = "YOU GO 'ORZ' AND SHOW RESPECT.\nYOUR DETERMINATION SWELLS.\nYOUR NEXT ATTACK DEALS MORE DAMAGE!";
+            } else {
+                // do not apply if already active (will waste player turn)
+                dialogText = "YOUR SPIRIT IS ALREADY DETERMINED!";
+            }
         }
         playerTurnEnded = true;
         setCurrentState(State.DIALOG);
@@ -1793,11 +1787,14 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         if (currentState == State.MAIN_MENU) {
             if (code == KeyEvent.VK_Z) {
                 setCurrentState(State.INTRO);
+                playSoundEffect("Sounds/buttonselect.wav");
                 playMusic("Sounds/fightmusic.wav");
                 dialogText = "YOU ENCOUNTERED GREBORY ANTONY.";
             } else if (code == KeyEvent.VK_I) {
+                playSoundEffect("Sounds/buttonselect.wav");
                 setCurrentState(State.INSTRUCTIONS);
             } else if (code == KeyEvent.VK_S) {
+                playSoundEffect("Sounds/buttonselect.wav");
                 setCurrentState(State.SETTINGS);
             } else if (code == KeyEvent.VK_Q) {
                 System.exit(0);
@@ -1806,17 +1803,20 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
 
         // INSTRUCTIONS
         else if (currentState == State.INSTRUCTIONS) {
+            playSoundEffect("Sounds/buttonswitch.wav");
             if (code == KeyEvent.VK_LEFT) {
                 if (instructionPage > 1) {
                     instructionPage--;
                 }
             }
             if (code == KeyEvent.VK_RIGHT) {
+                playSoundEffect("Sounds/buttonswitch.wav");
                 if (instructionPage < TOTAL_INSTRUCTION_PAGES) {
                     instructionPage++;
                 }
             }
             if (code == KeyEvent.VK_Z) {
+                playSoundEffect("Sounds/buttonselect.wav");
                 setCurrentState(State.MAIN_MENU);
             }
         }
@@ -1830,6 +1830,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
                 volume++;
             }
             if (code == KeyEvent.VK_Z) {
+                playSoundEffect("Sounds/buttonselect.wav");
                 setCurrentState(State.MAIN_MENU);
             }
         }
@@ -1882,6 +1883,9 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         // DIALOG or INTRO states
         else if (currentState == State.DIALOG || currentState == State.INTRO) {
             if (code == KeyEvent.VK_Z) {
+                if (dialogText.contains("FORFEIT")) {
+                    playMusic("Sounds/menumusic.wav");
+                }
                 endDialog();
             }
         }
