@@ -1,9 +1,9 @@
 /*
 * Author: Michael Zhang and Bryan Yao
 * Date: 2025-01-08
-* Description: This class defines the properties of a homing bullet that tracks and moves 
-* towards a target player. It inherits methods from the Bullet class for handling its position,
-* movement, rendering, and collision detection.
+* Description: This class handles the rendering and logic for different game states. It manages the 
+* main menu, instructions, settings, and player menu. Implements KeyListener for user input and 
+* ActionListener for timer events.
 */
 
 import javax.imageio.ImageIO;
