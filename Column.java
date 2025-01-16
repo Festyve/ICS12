@@ -11,7 +11,10 @@ public class Column {
     public int x;
     public int gapY;
     public int gapHeight;
-    public ArrayList<Rectangle> boxes;
+    public ArrayList<Rectangle> boxes; // hold all the boxes to shoot
+    // hitbox of columns
+    public Rectangle topRect;
+    public Rectangle bottomRect;
 
     public Column() {
         boxes = new ArrayList<>();
