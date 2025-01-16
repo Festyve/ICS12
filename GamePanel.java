@@ -1623,20 +1623,24 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         // award damage based off of the target zone the player hits
         if (fightMarkerX >= targetStartX && fightMarkerX <= targetStartX + targetWidth) {
             baseDamage = 10;
+            finalDamage = 10;
             hitResult = "PERFECT HIT! YOU HIT CRAZY DAMAGE!";
         } else if (distance < fightBarWidth / 4) {
             baseDamage = 7;
+            finalDamage = 7;
             hitResult = "GOOD HIT! YOU DEALT GREAT DAMAGE!";
         } else if (distance < fightBarWidth / 2) {
             baseDamage = 4;
+            finalDamage = 4;
             hitResult = "OKAY HIT! YOU DEALT SOME DAMAGE.";
         } else {
             baseDamage = 1;
+            finalDamage = 1;
             hitResult = "MISS... YOU DEALT LITTLE DAMAGE.";
         }
 
         // combine various modifiers with the base damage
-        finalDamage = (int) ((baseDamage + player.getNextAttackBoost()) * dmgMod * playerDamageModifier);
+        finalDamage = Math.max(finalDamage, (int) ((baseDamage + player.getNextAttackBoost()) * dmgMod * playerDamageModifier));
         boss.damage(finalDamage);
 
         // show floating damage text over the boss
@@ -1958,7 +1962,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
                 pattern = getCurrentAttackPattern();
                 if (pattern instanceof PillarBoxAttack) {
                     pr = player.getHitbox();
-                    pb = new Bullet(pr.x + pr.width, pr.y + pr.height / 2,20, 10, 0, 0, null,Color.YELLOW);
+                    pb = new Bullet(pr.x + pr.width, pr.y + pr.height/2 - 5,10, 10, 0, 0, null,Color.YELLOW);
                     spawnPlayerBullet(pb);
                 }
             }
