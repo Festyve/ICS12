@@ -12,7 +12,7 @@ import java.awt.*;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 
-public class MovingGapRectanglesAttack extends AttackPattern {
+public class MovingGapAttack extends AttackPattern {
     private long startTime;
     private int duration = 8000; 
     private int damage = 20; 
@@ -25,7 +25,7 @@ public class MovingGapRectanglesAttack extends AttackPattern {
     private boolean imageLoaded = false;
 
     // constructor that initializes the attack by loading the attack image.
-    public MovingGapRectanglesAttack(GamePanel panel) {
+    public MovingGapAttack(GamePanel panel) {
         super(panel);
         loadAttackImage("/Images/pipe.png");
     }
