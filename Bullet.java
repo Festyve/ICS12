@@ -1,6 +1,6 @@
 /*
  * Author: Michael Zhang and Bryan Yao
- * Date: 2025-01-08
+ * Date: 2025-01-16
  * Description: This class defines the properties of a bullet in the game. It contains methods for 
  * handling its position, movement, rendering, and collision detection.
  */
