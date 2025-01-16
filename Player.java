@@ -1,6 +1,6 @@
 /*
  * Author: Michael Zhang and Bryan Yao
- * Date: 2025-01-08
+ * Date: 2025-01-16
  * Description: This class represents the Player in the game, handling its position, movement,
  * health, rendering, damage, invulnerability frames, and inventory/consumable item usage.
  */
