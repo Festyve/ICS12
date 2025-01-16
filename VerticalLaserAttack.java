@@ -24,7 +24,7 @@ public class VerticalLaserAttack extends AttackPattern {
     private static final long FINAL_LASER_WARNING_TIME = 1000;
     private static final long NORMAL_WARNING_TIME = 1500;  
     private static final long NORMAL_ACTIVE_TIME  = 1000;  
-    private static final long FAST_WARNING_TIME   = 500;  
+    private static final long FAST_WARNING_TIME   = 750;  
     private static final long FAST_ACTIVE_TIME    = 500;  
 
     // variables for the final single phase of the attack (singlePhaseActivated)
