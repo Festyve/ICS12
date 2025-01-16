@@ -68,11 +68,10 @@ public class HomingProjectileAttack extends AttackPattern {
             duration = 10000; 
             spawnInterval = 1500;
             maxSpawns = 15; 
-            damage = 25;
+            damage = 20;
         }
     }
 
-    
     @Override
     // method to perform the attack pattern
     public void execute() {
