@@ -883,8 +883,8 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
             "- HP of the boss and player are displayed at the top and middle of the screen.\n" +
             "- If the player receives damage from an \n" + 
             "attack, they will get 0.5 seconds of \n" + 
-            " invincibility where they take 0 damage \n" + 
-            " (shown with a flashing sprite).\n";
+            "invincibility where they take 0 damage \n" + 
+            "(shown with a flashing sprite).\n";
         
             instructionsPages[1] = 
             "Instructions - Page 2:\n\n" + 
