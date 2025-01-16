@@ -1,6 +1,6 @@
 /*
  * Author: Michael Zhang and Bryan Yao
- * Date: 2024-01-08
+ * Date: 2024-01-16
  * Description: This class creates a new GameFrame, which initializes the game.
  */
 import javax.swing.SwingUtilities;
