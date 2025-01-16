@@ -1,6 +1,6 @@
 /*
  * Author: Michael Zhang and Bryan Yao
- * Date: 2025-01-08
+ * Date: 2025-01-16
  * Description: This class defines the properties of a homing bullet that tracks and moves 
  * towards a target player. It inherits methods from the Bullet class for handling its position,
  * movement, rendering, and collision detection.
