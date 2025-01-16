@@ -5,7 +5,6 @@
 * main menu, instructions, settings, and player menu. Implements KeyListener for user input and 
 * ActionListener for timer events.
 */
-
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -22,7 +21,7 @@ import java.io.InputStream;
 import java.awt.image.BufferedImage;
 
 public class GamePanel extends JPanel implements KeyListener, ActionListener {
-//short enum that defines all possible states/screens in the game.
+    //short enum that defines all possible states/screens in the game
     public enum State {
     MAIN_MENU,
     INTRO,
@@ -38,10 +37,10 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
     SETTINGS
     }
 
-    // keeps track of the current state of the game.
+    // keeps track of the current state of the game
     private State currentState = State.MAIN_MENU;
 
-    // image fields used for drawing various UI elements, background, boss, player, etc.
+    // image fields used for drawing various UI elements, background, boss, player, etc
     private BufferedImage exclamationImage;
     private BufferedImage bossImage;
     private BufferedImage playerImage; 
@@ -62,7 +61,18 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
     private Image bulletImage;
     private Image homingImage;
 
-    // Strings to store the label of menu options for the main "battle" menu.
+    // variables for scaled images to avoid rescaling every frame, reduce lag
+    private Image fightButtonScaled;
+    private Image fightHoverScaled;
+    private Image actButtonScaled;
+    private Image actHoverScaled;
+    private Image itemButtonScaled;
+    private Image itemHoverScaled;
+    private Image mercyButtonScaled;
+    private Image mercyHoverScaled;
+    private Image backgroundScaled;
+
+    // Strings to store the label of menu options for the main "battle" menu
     private final String[] MENUOPTIONS = {"FIGHT", "ACT", "ITEM", "QUIT"};
     private int selectedOption = 0; // track the currently selected menu option
 
@@ -77,8 +87,8 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
     // fonts used throughout the game for dialogs, menus, etc.
     private Font customFont;
     private Font dialogFont = new Font("Monospaced", Font.PLAIN, 32);
-    private Font menuFont   = new Font("Monospaced", Font.BOLD, 36);
-    private Font uiFont     = new Font("Monospaced", Font.PLAIN, 28);
+    private Font menuFont = new Font("Monospaced", Font.BOLD, 36);
+    private Font uiFont = new Font("Monospaced", Font.PLAIN, 28);
 
     // variables for kirby animation
     private Image kirbyImage;     
@@ -92,7 +102,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
     private boolean fightMarkerMovingRight = true;
     private boolean fightKeyPressed = false;
     private int targetStartX;
-    private int targetWidth = 100; // the "perfect" or "good" hit zone's width
+    private int targetWidth = 100; // the "perfect" hit zone's width
 
     // variables for the damage popup data (the floating damage text above the boss after being hit)
     private boolean showDamagePopup = false;
@@ -178,6 +188,10 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
 
             @Override
             public void componentResized(ComponentEvent e) {
+                // re-scale the background one time here (rather than per frame)
+                if (backgroundImage != null && getWidth() > 0 && getHeight() > 0) {
+                    backgroundScaled = backgroundImage.getScaledInstance(getWidth(), getHeight(), Image.SCALE_SMOOTH);
+                }
                 initializeLayout();
             }
         });
@@ -397,6 +411,15 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        fightButtonScaled = fightButtonImage.getScaledInstance(200, 80, Image.SCALE_SMOOTH);
+        fightHoverScaled = fightHoverImage.getScaledInstance(200, 80, Image.SCALE_SMOOTH);
+        actButtonScaled = actButtonImage.getScaledInstance(200, 80, Image.SCALE_SMOOTH);
+        actHoverScaled = actHoverImage.getScaledInstance(200, 80, Image.SCALE_SMOOTH);
+        itemButtonScaled = itemButtonImage.getScaledInstance(200, 80, Image.SCALE_SMOOTH);
+        itemHoverScaled = itemHoverImage.getScaledInstance(200, 80, Image.SCALE_SMOOTH);
+        mercyButtonScaled = mercyButtonImage.getScaledInstance(200, 80, Image.SCALE_SMOOTH);
+        mercyHoverScaled = mercyHoverImage.getScaledInstance(200, 80, Image.SCALE_SMOOTH);
     }
 
     // loads a custom font (PixelOperator8-Bold.ttf) from the resources folder, if present.
@@ -601,13 +624,8 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
             return;
         }
 
-        // draw background (if loaded), else fill black
-        if (backgroundImage != null) {
-            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-        } else {
-            g.setColor(Color.BLACK);
-            g.fillRect(0, 0, getWidth(), getHeight());
-        }
+        // draw background
+        g.drawImage(backgroundScaled, 0, 0, this);
 
         // draw common UI (boss HP, etc.) for game states (except the main menu)
         drawBossUI(g);
@@ -1032,11 +1050,14 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         int x;
         int y;
         Image toDraw;
-        Image scaled;
 
         // variables for prompt on navgiation
         String prompt;
         int promptWidth;
+
+        // use pre-scaled images
+        normalImages = new Image[]{fightButtonScaled, actButtonScaled, itemButtonScaled, mercyButtonScaled};
+        hoverImages = new Image[]{fightHoverScaled, actHoverScaled, itemHoverScaled, mercyHoverScaled};
 
         // draws the outer box of the menu
         g2d = (Graphics2D) g.create();
@@ -1048,9 +1069,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         g2d.fillRect(bottomBox.x + 1, bottomBox.y + 1, bottomBox.width - 1, bottomBox.height - 1);
         g2d.dispose();
 
-        normalImages = new Image[]{fightButtonImage, actButtonImage, itemButtonImage, mercyButtonImage};
-        hoverImages  = new Image[]{fightHoverImage, actHoverImage, itemHoverImage, mercyHoverImage};
-
+        // set up all the formatting variables
         buttonWidth  = 200;
         buttonHeight = 80;
         spacing = 80;
@@ -1067,10 +1086,9 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
             } else {
                 toDraw = normalImages[i];
             }
-            scaled = toDraw.getScaledInstance(buttonWidth, buttonHeight, Image.SCALE_SMOOTH);
 
             y = centerY - buttonHeight / 2;
-            g.drawImage(scaled, x, y, null);
+            g.drawImage(toDraw, x, y, null);
             x += buttonWidth + spacing;
         }
 
