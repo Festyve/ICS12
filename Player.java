@@ -71,7 +71,7 @@ public class Player {
         items.add(new Item("Health Potion","Heals 40 HP.",40,3));
         items.add(new Item("Shield Token","Nullifies all damage twice.",0,1));
         items.add(new Item("Power Flask","Your next attack deals +150% damage.",0,2));
-        items.add(new Item("Grebbory's Assignment Resubmission", "Heals all missing HP.",100,1));
+        items.add(new Item("Grebbory's Assignment Resubmission", "Heals all missing HP.",1000000,1));
 
         selectedItemIndex = 0;
     }
@@ -263,16 +263,21 @@ public class Player {
                     hp = maxHP;
                 }
                 i.useOne();
-            }
-            else if (i.getName().equals("Shield Token")) {
+            } else if (i.getName().equals("Shield Token")) {
                 shieldActive = true;
                 shieldTurns = 2;
                 i.useOne();
-            }
-            else if (i.getName().equals("Power Flask")) {
+            } else if (i.getName().equals("Power Flask")) {
                 nextAttackBoost = 15; 
                 i.useOne();
+            } else if (i.getName().equals("Grebbory's Assignment Resubmission")){
+                hp += i.getHealAmount();
+                if (hp > maxHP) {
+                    hp = maxHP;
+                }
+                i.useOne();
             }
+            
         }
     }
 
