@@ -8,8 +8,8 @@ javac GamePanel.java
 javac HomingBullet.java
 javac HomingProjectileAttack.java
 javac Item.java
-javac MovingGapRectanglesAttack.java
-javac PillarBoxAttack.java
+javac MovingGapAttack.java
+javac GunnerAttack.java
 javac Player.java
 javac RandomProjectileAttack.java
 javac VerticalLaserAttack.java
