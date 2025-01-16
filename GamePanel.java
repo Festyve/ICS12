@@ -1860,8 +1860,8 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
 
         // INSTRUCTIONS
         else if (currentState == State.INSTRUCTIONS) {
-            playSoundEffect("Sounds/buttonswitch.wav");
             if (code == KeyEvent.VK_LEFT) {
+                playSoundEffect("Sounds/buttonswitch.wav");
                 if (instructionPage > 1) {
                     instructionPage--;
                 }
