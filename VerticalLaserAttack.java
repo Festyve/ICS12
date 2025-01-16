@@ -1,6 +1,6 @@
 /*
 * Author: Michael Zhang and Bryan Yao
-* Date: 2025-01-08
+* Date: 2025-01-16
 * Description: This class implements a  laser attack pattern for the boss character.
 * It manages the spawning, behaviour, and timing of the lasers, that spawn randomly or track the player.
 * The attack also changes based on the game's cycle count.
