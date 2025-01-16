@@ -1,6 +1,6 @@
 /*
  * Author: Michael Zhang and Bryan Yao
- * Date: 2025-01-08
+ * Date: 2025-01-16
  * Description: This class manages a gunner shooting style attack with gaps in columns and 
  * boxes that the player must shoot or dodge. It initializes pillars, updates their positions, 
  * checks collisions with the player, and renders them in the game.
