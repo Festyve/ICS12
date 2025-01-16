@@ -1,6 +1,6 @@
 /*
 * Author: Michael Zhang and Bryan Yao
-* Date: 2025-01-08
+* Date: 2025-01-16
 * Description: This class handles the rendering and logic for different game states. It manages the 
 * main menu, instructions, settings, and player menu. Implements KeyListener for user input and 
 * ActionListener for timer events.
