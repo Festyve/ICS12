@@ -1892,6 +1892,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
                     difficultyIdx = difficulties.length - 1;
                 }
             } else if (code == KeyEvent.VK_RIGHT) { 
+                playSoundEffect("Sounds/buttonswitch.wav");
                 // move selection to the right
                 difficultyIdx++;
                 if (difficultyIdx >= difficulties.length) {
