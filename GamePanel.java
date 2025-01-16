@@ -37,6 +37,19 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
     SETTINGS
     }
 
+    // variables for the text of different difficulties the player can use
+    private String[] difficulties = {"EASY", "HARD", "CHEAT"};
+    private String[] difficultyDescription = {
+        "Easy Mode (300 HP) - Great for beginners!",
+        "Hard Mode (100 HP) - A Challenge!",
+        "Mr. Anthony Mode - A MILLION HP."
+    };
+
+    // track which difficulty is being used
+    private int difficultyIdx = 0;
+    // the HP values for each mode
+    private int[] difficultyHP = {300, 100, 1_000_000};
+
     // keeps track of the current state of the game
     private State currentState = State.MAIN_MENU;
 
@@ -129,17 +142,15 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
     private ArrayList<Bullet> bullets = new ArrayList<>();
     private ArrayList<Bullet> playerBullets = new ArrayList<>();
 
-    private int volume = 5; // track the current volume
-
     // the main timer for our game loop
     private Timer gameTimer;
 
     // concrete attack patterns (instances for each pattern type)
-    private MovingGapRectanglesAttack movingGapAttack;
+    private MovingGapAttack mga;
     private RandomProjectileAttack rpa;
     private HomingProjectileAttack hpa;
     private VerticalLaserAttack vla;
-    private PillarBoxAttack pba;
+    private GunnerAttack ga;
 
     // variables for exclamation mark usage (for homing warnings, etc.)
     private boolean showExclamationMark = false;
@@ -175,7 +186,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         addKeyListener(this);
         setDoubleBuffered(true);
 
-        // timer for updates, calls actionPerformed() repeatedly
+        // timer for updates
         gameTimer = new Timer(15, this);
         gameTimer.start();
 
@@ -453,16 +464,16 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
 
         // create instances of each pattern
         rpa = new RandomProjectileAttack(this, bulletImage);
-        movingGapAttack = new MovingGapRectanglesAttack(this);
+        mga = new MovingGapAttack(this);
         hpa = new HomingProjectileAttack(this, homingImage);
         vla = new VerticalLaserAttack(this);
-        pba = new PillarBoxAttack(this);
+        ga = new GunnerAttack(this);
 
-        attackPatterns.add(movingGapAttack);
+        attackPatterns.add(mga);
         attackPatterns.add(rpa);
         attackPatterns.add(hpa);
         attackPatterns.add(vla);
-        attackPatterns.add(pba);
+        attackPatterns.add(ga);
     }
 
     // set up the layout sizes for the boss sprite, the battle box, and the bottom UI box depending on current state
@@ -555,7 +566,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         }
 
         // create the Player object and configure properties
-        player = new Player(playerX, playerY, 25, 25, 100, playerImage, flashImage, playerImage, flashImage, jetImage, jetFlashImage);
+        player = new Player(playerX, playerY, 25, 25, 10000000, playerImage, flashImage, playerImage, flashImage, jetImage, jetFlashImage);
 
         // create the Boss object and configure properties
         boss = new Boss("GREBBORY ANTONY", 100, bossImage, 0, 0, 150, 150);
@@ -953,26 +964,48 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
 
     // draws the settings screen
     private void drawSettings(Graphics g) {
-        // variables for volume settings
-        String volText;
-        int volW;
-
         // variables for instructions
         String adjustText;
         int adjW;
 
+        // variables for text in settings
+        String title;
+        String displayText;
+        int titleWidth;
+        int baseY;
+        int spacing;
+        FontMetrics fm;
+
         g.setFont(uiFont);
         g.setColor(Color.WHITE);
 
-        // show volume level
-        volText = "Volume: " + volume;
-        volW = g.getFontMetrics().stringWidth(volText);
-        g.drawString(volText, getWidth() / 2 - volW / 2, getHeight() / 2);
+        // draw the title
+        title = "Select Difficulty:";
+        g.setFont(g.getFont().deriveFont(40f));
+        fm = g.getFontMetrics();
+        titleWidth = fm.stringWidth(title);
+        g.drawString(title, getWidth()/2 - titleWidth/2, 150);
+
+        baseY = getHeight()/2 - 50;
+        spacing = 80;
+        g.setFont(g.getFont().deriveFont(26f));
+        for(int i = 0; i < difficulties.length; i++){
+            displayText = difficulties[i] + ": " + difficultyDescription[i];
+            if(i == difficultyIdx){
+                // highlight current difficulty in yellow
+                g.setColor(Color.YELLOW);
+            } else {
+                g.setColor(Color.WHITE);
+            }
+            // draw the option and description
+            g.drawString(displayText, 140, baseY + i * spacing);
+        }     
 
         // show instructions
-        adjustText = "[LEFT/RIGHT] to adjust, [Z] BACK";
+        g.setColor(Color.WHITE);
+        adjustText = "[LEFT/RIGHT] to change difficulty, [Z] BACK";
         adjW = g.getFontMetrics().stringWidth(adjustText);
-        g.drawString(adjustText, getWidth() / 2 - adjW / 2, getHeight() / 2 + 50);
+        g.drawString(adjustText, getWidth() / 2 - adjW / 2, getHeight() / 2 + 300);
     }
 
     // draws the boss UI (HP) and its image at the top
@@ -1132,14 +1165,14 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         }
         // draw extra shapes/effects from the active pattern, if any
         pattern = getCurrentAttackPattern();
-        if (pattern instanceof MovingGapRectanglesAttack) {
-            ((MovingGapRectanglesAttack) pattern).drawAttack(g);
+        if (pattern instanceof MovingGapAttack) {
+            ((MovingGapAttack) pattern).drawAttack(g);
         }
         if (pattern instanceof VerticalLaserAttack) {
             ((VerticalLaserAttack) pattern).drawAttack(g);
         }
-        if (pattern instanceof PillarBoxAttack) {
-            ((PillarBoxAttack) pattern).drawAttack(g);
+        if (pattern instanceof GunnerAttack) {
+            ((GunnerAttack) pattern).drawAttack(g);
         }
     }
 
@@ -1454,7 +1487,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
 
                 // if the boss still lives, go back to DIALOG to show next text
                 if (boss.getHP() > 0 && !player.isDead()) {
-                    dialogText = ("Greb: \"Not bad... Next phase!\"").toUpperCase();
+                    dialogText = ("Greb: Not bad... Next phase!").toUpperCase();
                     setCurrentState(State.DIALOG);
                 }
             }
@@ -1845,15 +1878,25 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
 
         // SETTINGS
         else if (currentState == State.SETTINGS) {
-            if (code == KeyEvent.VK_LEFT && volume > 0) {
-                volume--;
-            }
-            if (code == KeyEvent.VK_RIGHT && volume < 10) {
-                volume++;
-            }
             if (code == KeyEvent.VK_Z) {
+                // set player's HP to the chosen difficulty
                 playSoundEffect("Sounds/buttonselect.wav");
+                player.setMaxHP(difficultyHP[difficultyIdx]);
+
                 setCurrentState(State.MAIN_MENU);
+            } else if (code == KeyEvent.VK_LEFT) {
+                playSoundEffect("Sounds/buttonswitch.wav");
+                // move selection to the left
+                difficultyIdx--;
+                if (difficultyIdx < 0) {
+                    difficultyIdx = difficulties.length - 1;
+                }
+            } else if (code == KeyEvent.VK_RIGHT) { 
+                // move selection to the right
+                difficultyIdx++;
+                if (difficultyIdx >= difficulties.length) {
+                    difficultyIdx = 0;
+                }
             }
         }
 
@@ -1960,9 +2003,10 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
             // [X] can be used to shoot if the pattern allows
             if (code == KeyEvent.VK_X) {
                 pattern = getCurrentAttackPattern();
-                if (pattern instanceof PillarBoxAttack) {
+                if (pattern instanceof GunnerAttack) {
                     pr = player.getHitbox();
                     pb = new Bullet(pr.x + pr.width, pr.y + pr.height/2 - 5,10, 10, 0, 0, null,Color.YELLOW);
+                    GamePanel.playSoundEffect("Sounds/playerbullet.wav");
                     spawnPlayerBullet(pb);
                 }
             }
