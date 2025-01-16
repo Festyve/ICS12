@@ -1,6 +1,6 @@
 /*
  * Author: Michael Zhang and Bryan Yao
- * Date: 2025-01-08
+ * Date: 2025-01-16
  * Description: This class defines properties for the boss character such as health, name 
  * and visual representation. It provides helper methods for interactions with the boss such
  * as taking damage or being defeated.
