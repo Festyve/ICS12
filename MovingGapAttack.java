@@ -1,6 +1,6 @@
 /*
  * Author: Michael Zhang and Bryan Yao
- * Date: 2025-01-08
+ * Date: 2025-01-16
  * Description: This class handles a boss attack pattern where moving rectangular pillars
  * travel horizontally and leave gaps that the player must navigate through. It initializes 
  * pillars, updates their positions, checks collisions with the player, and renders them in the game.
