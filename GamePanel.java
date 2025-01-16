@@ -1,9 +1,11 @@
 /*
 * Author: Michael Zhang and Bryan Yao
 * Date: 2025-01-16
-* Description: This class handles the rendering and logic for different game states. It manages the 
-* main menu, instructions, settings, and player menu. Implements KeyListener for user input and 
-* ActionListener for timer events.
+* Description: This class manages rendering, user input, and core game logic across 
+* various states such as menus, instructions, settings, and battles. It handles difficulty 
+* selection, menu navigation, combat interactions, etc. It is constantly updating game entities and 
+* playing sounds. The class ensures smooth gameplay by processing keyboard events, updating 
+* animations, and managing resources like images and audio.
 */
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
