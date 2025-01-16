@@ -14,8 +14,13 @@ public class PillarBoxAttack extends AttackPattern {
     private long startTime;
     private int duration = 8000;
     private int damage = 20;
-    private int rectWidth = 60;
+
+    // pillar and box sizes
+    private int rectWidth = 50;
     private int rectSpeed = 4;
+    private int gapBaseHeight = 130;
+    private int boxSpacing = 5; 
+    private int boxSize = 40;
 
     private ArrayList<Column> columns = new ArrayList<>();
     private Random rand = new Random();
@@ -31,19 +36,19 @@ public class PillarBoxAttack extends AttackPattern {
         Rectangle box;
         int count;
         Column c;
-        int boxSize;
+        int boxY;
         int numBoxes;
-        Rectangle br;
+        Rectangle smallBox;
 
-        // reset all the variables
+        // clear any leftover bullets
         panel.getBullets().clear();
         panel.getPlayerBullets().clear();
+
+        // reset the attack pattern variables
         finished = false;
         startTime = System.currentTimeMillis();
         columns.clear();
-
         box = panel.getBattleBox();
-
         count = 5; // base number of columns
 
         // if second phase, increase difficulty
@@ -53,25 +58,34 @@ public class PillarBoxAttack extends AttackPattern {
             damage = 25;
         }
 
+        // switch player image to jet image
         panel.getPlayer().setToShipImage();
-
+    
+        // create columns
         for (int i = 0; i < count; i++) {
             c = new Column();
 
-            // set up column position
+            // set up column position to the right, so they come in sequentially
             c.x = box.x + box.width + i * 300;
-            c.gapY = box.y + rand.nextInt(box.height - 100);
-            c.gapHeight = 100;
+
+            // randomized gap so the opening for the user moves around
+            c.gapY = box.y + rand.nextInt(box.height - gapBaseHeight);
+
+            // gap is larger than the player, to give the player room
+            c.gapHeight = gapBaseHeight;
+
+            // create collision hitboxes
+            c.topRect = new Rectangle(c.x,box.y,rectWidth,c.gapY - box.y);
+            c.bottomRect = new Rectangle(c.x,c.gapY + c.gapHeight,rectWidth,box.y + box.height - (c.gapY + c.gapHeight));
 
             c.boxes.clear();
-
-            boxSize = 20;
-            numBoxes = 4;
-
-            // create hitboxes for rendering and collision detection
+            
+            // create boxes in the gap
+            numBoxes = 3;
             for (int b = 0; b < numBoxes; b++) {
-                br = new Rectangle(c.x, c.gapY + (b * (boxSize + 5)), boxSize, boxSize);
-                c.boxes.add(br);
+                boxY = c.gapY + (b * (boxSize + boxSpacing));
+                smallBox = new Rectangle(c.x + (rectWidth - boxSize)/2, boxY, boxSize, boxSize);
+                c.boxes.add(smallBox);
             }
 
             columns.add(c);
@@ -91,15 +105,13 @@ public class PillarBoxAttack extends AttackPattern {
         it = columns.iterator();
         Column c;
 
-        // define all the hitboxes for collision detection
+        // define hitbox for collision detection
         Rectangle playerRect;
-        Rectangle topRect;
-        Rectangle bottomRect;
 
         Iterator<Bullet> pbit;
+        Iterator<Rectangle> boxIt;
         Bullet pb;
         boolean consumed;
-        Iterator<Rectangle> boxIt;
         Rectangle bRect;
 
         while (it.hasNext()) {
@@ -108,20 +120,26 @@ public class PillarBoxAttack extends AttackPattern {
             // move the column left based on rectangle speed and boss modifier
             c.x -= (int) (rectSpeed * panel.getBossSpeedModifier());
 
-            // update boxes's x to match column x
-            for (Rectangle br : c.boxes) {
-                br.x = c.x;
+            // update topRect and bottomRect in-place 
+            c.topRect.x = c.x;
+            c.topRect.height = c.gapY - box.y;
+            c.bottomRect.x = c.x;
+            c.bottomRect.y = c.gapY + c.gapHeight;
+            c.bottomRect.height = box.y + box.height - (c.gapY + c.gapHeight);
+
+            // update each small box's x-position
+            for (Rectangle smallBox : c.boxes) {
+                smallBox.x = c.x + (rectWidth - boxSize) / 2;
             }
 
+            // define player hitbox for collision detection
             playerRect = panel.getPlayer().getHitbox();
             
-            // define the top and bottom rectangles with gaps for the player to pass through
-            topRect = new Rectangle(c.x, box.y, rectWidth, c.gapY - box.y);
-            bottomRect = new Rectangle(c.x, c.gapY + c.gapHeight, rectWidth, box.y + box.height - (c.gapY + c.gapHeight));
-
-            // check collision between player and columns
-            if (topRect.intersects(playerRect) || bottomRect.intersects(playerRect)) {
+            // if player hits topRect or bottomRect, damage them
+            if (c.topRect.intersects(playerRect) || c.bottomRect.intersects(playerRect)) {
                 panel.decreasePlayerHP(damage);
+
+                // if player dies to attack, end game
                 if (panel.getPlayer().isDead()) {
                     finished = true;
                     panel.getPlayerBullets().clear();
@@ -129,10 +147,12 @@ public class PillarBoxAttack extends AttackPattern {
                 }
             }
 
-            // check collision between player and individual boxes between the column
+            // check collision with the boxes in the gap
             for (Rectangle bR : c.boxes) {
                 if (bR.intersects(playerRect)) {
                     panel.decreasePlayerHP(damage);
+
+                    // if player dies to attack, end game
                     if (panel.getPlayer().isDead()) {
                         finished = true;
                         panel.getPlayerBullets().clear();
@@ -141,7 +161,7 @@ public class PillarBoxAttack extends AttackPattern {
                 }
             }
 
-            // remove the column if it has moved out of the battle arena
+            // remove the column if it has moved past the left boundary
             if (c.x + rectWidth < box.x - 200) {
                 it.remove();
             }
@@ -153,30 +173,36 @@ public class PillarBoxAttack extends AttackPattern {
             pb = pbit.next();
             consumed = false;
 
-            for (int i = 0; i < columns.size() && !consumed; i++) {
-                c = columns.get(i);
-
-                topRect = new Rectangle(c.x, box.y, rectWidth, c.gapY - box.y);
-                bottomRect = new Rectangle(c.x, c.gapY + c.gapHeight, rectWidth, box.y + box.height - (c.gapY + c.gapHeight));
-
-                // check collision with top and bottom rectangle
-                if (topRect.intersects(pb.getBounds()) || bottomRect.intersects(pb.getBounds())) {
-                    pbit.remove();
-                    consumed = true;
-                    break;
-                }
-
-                boxIt = c.boxes.iterator();
-
-                // check collision with individual boxes within the column
+            for (Column col : columns) {
+                // check collisions with the small boxes in the gap
+                boxIt = col.boxes.iterator();
                 while (boxIt.hasNext()) {
                     bRect = boxIt.next();
                     if (bRect.intersects(pb.getBounds())) {
+                        // remove just that small box and the bullet
                         boxIt.remove();
                         pbit.remove();
                         consumed = true;
                         break;
                     }
+                }
+                if (consumed) {
+                    // bullet is gone, stop checking further
+                    break;
+                }
+
+                // check collision with topRect
+                if (col.topRect.intersects(pb.getBounds())) {
+                    pbit.remove();
+                    consumed = true;
+                    break;
+                }
+
+                // check collision with bottomRect
+                if (col.bottomRect.intersects(pb.getBounds())) {
+                    pbit.remove();
+                    consumed = true;
+                    break;
                 }
             }
         }
@@ -187,6 +213,7 @@ public class PillarBoxAttack extends AttackPattern {
             panel.getPlayerBullets().clear();
         }
 
+        // if finished, revert player image back to the heart image
         if(finished){
             panel.getPlayer().resetToHeartImage();
         }
