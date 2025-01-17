@@ -1692,6 +1692,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         // combine various modifiers with the base damage
         finalDamage = Math.max(finalDamage, (int) ((baseDamage + player.getNextAttackBoost()) * dmgMod * playerDamageModifier));
         boss.damage(finalDamage);
+        player.setAttackBuff(0);
         playSoundEffect("Sounds/slash.wav");
 
         // show floating damage text over the boss
