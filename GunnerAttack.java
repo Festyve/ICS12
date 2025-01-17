@@ -99,16 +99,13 @@ public class GunnerAttack extends AttackPattern {
         long now;
         Rectangle box;
         Iterator<Column> it = columns.iterator();
-
         now = System.currentTimeMillis();
         box = panel.getBattleBox();
-
         it = columns.iterator();
         Column c;
 
-        // define hitbox for collision detection
+        // variables for collision detection
         Rectangle playerRect;
-
         Iterator<Bullet> pbit;
         Iterator<Rectangle> boxIt;
         Bullet pb;
@@ -180,32 +177,24 @@ public class GunnerAttack extends AttackPattern {
                 while (boxIt.hasNext()) {
                     bRect = boxIt.next();
                     if (bRect.intersects(pb.getBounds())) {
-                        // remove just that small box and the bullet
+                        // remove the small box
                         boxIt.remove();
-                        pbit.remove();
-                        GamePanel.playSoundEffect("Sounds/boxbreak.wav");
                         consumed = true;
+                        GamePanel.playSoundEffect("Sounds/boxbreak.wav");
                         break;
                     }
                 }
-                if (consumed) {
-                    // bullet is gone, stop checking further
-                    break;
-                }
 
-                // check collision with topRect
-                if (col.topRect.intersects(pb.getBounds())) {
-                    pbit.remove();
-                    consumed = true;
-                    break;
+                if (!consumed) {
+                    if (col.topRect.intersects(pb.getBounds()) || col.bottomRect.intersects(pb.getBounds())) {
+                        consumed = true;
+                    }
                 }
+            }
 
-                // check collision with bottomRect
-                if (col.bottomRect.intersects(pb.getBounds())) {
-                    pbit.remove();
-                    consumed = true;
-                    break;
-                }
+            // remove bullet if it has collided with one or more obstacles
+            if(consumed){
+                pbit.remove();
             }
         }
 
