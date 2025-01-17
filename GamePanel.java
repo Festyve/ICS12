@@ -600,7 +600,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         player = new Player(playerX, playerY, 25, 25, difficultyHP[difficultyIdx], playerImage, flashImage, playerImage, flashImage, jetImage, jetFlashImage);
 
         // create the Boss object and configure properties
-        boss = new Boss("GREBBORY ANTONY", 1, bossImage, 0, 0, 150, 150);
+        boss = new Boss("GREBBORY ANTONY", 100, bossImage, 0, 0, 150, 150);
 
         // initialize player's inventory (this might add items, potions, etc.)
         player.initializeInventory();
