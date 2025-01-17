@@ -46,9 +46,7 @@ public class Bullet {
             g.drawImage(bulletImage, x - imageWidth / 2, y - imageHeight / 2, imageWidth, imageHeight, observer);
         } else {
             g.setColor(color);
-            g.fillRect(x, y, 20,20);
-            g.setColor(Color.BLACK);
-            g.drawRect(x, y, 20, 20);
+            g.fillRect(x - imageWidth/2, y - imageHeight/2, imageWidth, imageHeight);
         }
     }
 
