@@ -50,7 +50,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
     // track which difficulty is being used
     private int difficultyIdx = 0;
     // the HP values for each mode
-    private int[] difficultyHP = {300, 100, 1_000_000};
+    private int[] difficultyHP = {300, 100, 1000000};
 
     // keeps track of the current state of the game
     private State currentState = State.MAIN_MENU;
@@ -574,7 +574,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         }
 
         // create the Player object and configure properties
-        player = new Player(playerX, playerY, 25, 25, 10000000, playerImage, flashImage, playerImage, flashImage, jetImage, jetFlashImage);
+        player = new Player(playerX, playerY, 25, 25, difficultyHP[difficultyIdx], playerImage, flashImage, playerImage, flashImage, jetImage, jetFlashImage);
 
         // create the Boss object and configure properties
         boss = new Boss("GREBBORY ANTONY", 100, bossImage, 0, 0, 150, 150);
