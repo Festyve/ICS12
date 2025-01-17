@@ -881,6 +881,9 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         instructionsPages[0] = 
             "Instructions - Page 1:\n\n" +
             "General:\n" +
+            "- All text is wrapped. This is because on\n" +
+            "different displays, the text formatting\n" + 
+            "may vary.\n" +
             "- Use Arrow Keys to Move.\n" +
             "- Press [Z] to Confirm Actions.\n" +
             "- Press [X] to Cancel.\n" +
