@@ -2,7 +2,7 @@
  * Author: Michael Zhang and Bryan Yao
  * Date: 2025-01-16
  * Description: This class defines properties for a column object. It is used solely for ease of
- * implementation of the PillarBoxAttack class.
+ * implementation of the GunnerAttack class.
  */
 import java.awt.Rectangle;
 import java.util.ArrayList;
