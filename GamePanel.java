@@ -1047,7 +1047,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
 
         // show instructions
         g.setColor(Color.WHITE);
-        adjustText = "[UP/DOWN] to change difficulty, [Z] BACK";
+        adjustText = "[UP/DOWN] SWITCH, [Z] CONFIRM, [X] BACK";
         adjW = g.getFontMetrics().stringWidth(adjustText);
         g.drawString(adjustText, getWidth() / 2 - adjW / 2, getHeight() / 2 + 300);
     }
@@ -1904,22 +1904,25 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
                 // set player's HP to the chosen difficulty
                 playSoundEffect("Sounds/buttonselect.wav");
                 player.setMaxHP(difficultyHP[difficultyIdx]);
-
                 setCurrentState(State.MAIN_MENU);
             } else if (code == KeyEvent.VK_UP) {
                 playSoundEffect("Sounds/buttonswitch.wav");
-                // move selection to the left
+                // move selection up in the difficulty list
                 difficultyIdx--;
                 if (difficultyIdx < 0) {
                     difficultyIdx = difficulties.length - 1;
                 }
-            } else if (code == KeyEvent.VK_DOWN) { 
+            } else if (code == KeyEvent.VK_DOWN) {
                 playSoundEffect("Sounds/buttonswitch.wav");
-                // move selection to the right
+                // move selection down in the difficulty list
                 difficultyIdx++;
                 if (difficultyIdx >= difficulties.length) {
                     difficultyIdx = 0;
                 }
+            } else if (code == KeyEvent.VK_X) {
+                // go back to main menu without applying changes
+                playSoundEffect("Sounds/buttonselect.wav");
+                setCurrentState(State.MAIN_MENU);
             }
         }
 
