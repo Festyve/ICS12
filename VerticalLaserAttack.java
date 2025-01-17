@@ -8,6 +8,8 @@
 import java.awt.*;
 
 public class VerticalLaserAttack extends AttackPattern {
+    private Image laserImage;
+    private Image warningImage;
     private long startTime;
     private int step = 0;
     private int damage = 30;
@@ -23,9 +25,9 @@ public class VerticalLaserAttack extends AttackPattern {
     private static final long FINAL_PHASE_DURATION = 10000; 
     private static final long FINAL_LASER_WARNING_TIME = 1000;
     private static final long NORMAL_WARNING_TIME = 1500;  
-    private static final long NORMAL_ACTIVE_TIME  = 1000;  
-    private static final long FAST_WARNING_TIME   = 750;  
-    private static final long FAST_ACTIVE_TIME    = 500;  
+    private static final long NORMAL_ACTIVE_TIME = 1000;  
+    private static final long FAST_WARNING_TIME = 750;  
+    private static final long FAST_ACTIVE_TIME = 500;  
 
     // variables for the final single phase of the attack (singlePhaseActivated)
     private boolean finalPhaseActive = false;
@@ -40,8 +42,10 @@ public class VerticalLaserAttack extends AttackPattern {
     private int laserCount = 6;  
     
     // constructor method
-    public VerticalLaserAttack(GamePanel panel) {
+    public VerticalLaserAttack(GamePanel panel, Image laserImage, Image warningImage) {
         super(panel);
+        this.laserImage = laserImage;
+        this.warningImage = warningImage;
     }
 
     // method that initializes the attack pattern
@@ -172,8 +176,14 @@ public class VerticalLaserAttack extends AttackPattern {
             // consider the laser 'active' for half a second orr keep it active until a new warning is spawned
             laserActiveTime = 500; // half a second
             if (now - finalLaserWarnStart >= FINAL_LASER_WARNING_TIME + laserActiveTime) {
-                // laser done, spawn next warning
-                spawnFinalLaserWarning(now);
+                // before spawning the next warning, check if there's enough time left in the final phase
+                if ((now + FINAL_LASER_WARNING_TIME + laserActiveTime) - finalPhaseStartTime > FINAL_PHASE_DURATION) {
+                    // if the next cycle would exceed the final phase duration, end the attack
+                    finished = true;
+                } else {
+                    // Laser duration finished, spawn next warning
+                    spawnFinalLaserWarning(now);
+                }
             }
             else {
                 // check if user intersects
@@ -254,10 +264,14 @@ public class VerticalLaserAttack extends AttackPattern {
         // variables for drawing the attack pattern
         int[] currentPattern;
         int lx;
+        int drawY;
+        Graphics2D g2d;
 
         box = panel.getBattleBox();
         laserCount = 6;
         segmentWidth = box.width / laserCount;
+        g2d = (Graphics2D) g.create();
+        g2d.setClip(box); // set clipping region to box, so image doesnt go outside
 
         if (step < patterns.length) {
             // normal phase
@@ -267,29 +281,36 @@ public class VerticalLaserAttack extends AttackPattern {
                 g.setColor(Color.YELLOW);
                 for (int lane : currentPattern) {
                     lx = box.x + (lane - 1) * segmentWidth;
-                    g.fillRect(lx, box.y + box.height - 20, segmentWidth, 20);
+                    g.drawImage(warningImage, lx, box.y + box.height + 5, segmentWidth,30, null);
                 }
             } else if (lasersActive) {
                 g.setColor(Color.WHITE);
                 for (int lane : currentPattern) {
                     lx = box.x + (lane - 1) * segmentWidth;
-                    g.fillRect(lx, box.y, segmentWidth, box.height);
+                    drawY = box.y; 
+                    // tile the image vertically from top to bottom of the battle box
+                    while (drawY < box.y + box.height) {
+                        g2d.drawImage(laserImage, lx, drawY, segmentWidth, laserImage.getHeight(null), null);
+                        drawY += laserImage.getHeight(null);
+                    }
                 }
             }
         } else {
             // the single-laser approach
             if (finalPhaseActive) {
                 if (finalLaserWarning) {
-                    // draw a small rectangle at the bottom to show where the laser will appear as a warning
-                    g.setColor(Color.YELLOW);
                     lx = box.x + (finalLaserLane - 1) * segmentWidth;
-                    g.fillRect(lx, box.y + box.height - 20, segmentWidth, 20);
+                    // draw a small rectangle at the bottom to show where the laser will appear as a warning
+                    g.drawImage(warningImage, lx, box.y + box.height + 5, segmentWidth, 30, null);
                 }
                 else if (finalLaserActive) {
-                    // draw the actual laser
-                    g.setColor(Color.WHITE);
+                    drawY = box.y;
                     lx = box.x + (finalLaserLane - 1) * segmentWidth;
-                    g.fillRect(lx, box.y, segmentWidth, box.height);
+                    // draw the actual laser
+                    while(drawY < box.y + box.height) {
+                        g2d.drawImage(laserImage, lx, drawY, segmentWidth, laserImage.getHeight(null), null);
+                        drawY += laserImage.getHeight(null);
+                    }
                 }
             }
         }
