@@ -64,7 +64,7 @@ public class MovingGapAttack extends AttackPattern {
         // if second phase, increase difficulty
         if (panel.getCycleCount() >= 1) {
             duration = 14000; 
-            rectSpeed = 10;
+            rectSpeed = 8;
             damage += 5;
             numberOfPillars = 16;
         }
