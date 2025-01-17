@@ -183,6 +183,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
 
     // music player variable
     static Clip clip;
+    static Clip effectClip;
 
     // constructor for the gamepnael, sets up various listeners, initializes timer, fonts, images, etc
     public GamePanel() {
@@ -248,6 +249,8 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
 
     // plays music in a loop, at a certain volume, sourced from https://www.geeksforgeeks.org/play-audio-file-using-java/
     public static void playMusic(String track) {
+        File audioFile;
+        AudioInputStream audioStream;
 
         // ensure music is stopped
         if (clip != null) {
@@ -260,9 +263,9 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
 
         try {
             // specify the path to the audio file
-            File audioFile = new File(track);
+            audioFile = new File(track);
             // create an AudioInputStream object from the audio file
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+            audioStream = AudioSystem.getAudioInputStream(audioFile);
             // get a clip resource
             clip = AudioSystem.getClip(); // assign the new clip to the class-level variable
             // open the audio stream for playback
@@ -278,12 +281,16 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
 
     // plays the sound effect
     static void playSoundEffect(String file){
+        File soundFile;
+        AudioInputStream audioInput;
+        Clip clip;
         try {
-            File soundFile = new File(file);
-            AudioInputStream audioInput = AudioSystem.getAudioInputStream(soundFile);
-            Clip clip = AudioSystem.getClip();
-            clip.open(audioInput);
-            clip.start();
+            soundFile = new File(file);  // specify the path to the audio file
+            audioInput = AudioSystem.getAudioInputStream(soundFile);
+            clip = AudioSystem.getClip();
+            clip.open(audioInput); // open the audio stream for playback
+            clip.start(); // start playing the audio
+            effectClip = clip;
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             System.out.println("Error playing sound file:" + e.getMessage());
         }
@@ -339,9 +346,16 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
             e.printStackTrace();
         }
 
-        // boss image
+        // win screen image
         try {
             winImage = ImageIO.read(getClass().getResource("/Images/win.png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // lose screen image
+        try {
+            loseImage = ImageIO.read(getClass().getResource("/Images/lose.png"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -586,7 +600,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         player = new Player(playerX, playerY, 25, 25, difficultyHP[difficultyIdx], playerImage, flashImage, playerImage, flashImage, jetImage, jetFlashImage);
 
         // create the Boss object and configure properties
-        boss = new Boss("GREBBORY ANTONY", 1, bossImage, 0, 0, 150, 150);
+        boss = new Boss("GREBBORY ANTONY", 100, bossImage, 0, 0, 150, 150);
 
         // initialize player's inventory (this might add items, potions, etc.)
         player.initializeInventory();
@@ -2023,11 +2037,17 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         // WIN or LOSE states
         else if (currentState == State.WIN || currentState == State.LOSE) {
             if (code == KeyEvent.VK_Z) {
-                setCurrentState(State.MAIN_MENU);
+                // stop any ongoing sound effect
+                if (effectClip != null && effectClip.isRunning()) {
+                    effectClip.stop();
+                    effectClip.close();
+                }
+                
                 resetGame();
 
                 // resume background music when leaving win/lose screen
                 playMusic("Sounds/menumusic.wav");
+                setCurrentState(State.MAIN_MENU);
             }
         }
     }
