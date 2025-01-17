@@ -912,7 +912,8 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
             "- Press [X] to Cancel.\n" +
             "- Use Items Wisely!\n" +
             "- Defeat Grebbory Antony!\n" + 
-            "- HP of the boss and player are displayed at the top and middle of the screen.\n" +
+            "- HP of the boss and player are displayed at the \n" + 
+            "top and middle of the screen.\n" +
             "- If the player receives damage from an \n" + 
             "attack, they will get 0.5 seconds of \n" + 
             "invincibility where they take 0 damage \n" + 
@@ -934,9 +935,11 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         instructionsPages[2] = 
             "Instructions - Page 3:\n\n" +
             "FIGHT:\n" +
-            "- If FIGHT is chosen, a minigame appears on the screen with a moving white bar.\n" +
+            "- If FIGHT is chosen, a minigame appears on the\n" + 
+            "screen with a moving white bar.\n" +
             "- Stop the moving white bar (press [Z]) as \n" + 
-            "close as you can to the middle to deal more damage to the boss.\n";
+            "close as you can to the middle to deal more\n" + 
+            "damage to the boss.\n";
     
         // Page 4: ACT Options Details
         instructionsPages[3] = 
@@ -955,10 +958,10 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
             "ITEM:\n" +
             "- If ITEM is chosen, you will see one of the \n" +
             "three possible items in your inventory.\n" +
-            "- The number of items in your inventory and the types of items you see cannot be\n" + 
-            "changed.\n" +
-            "- Each item provides a different buff to the player, which is shown through the \n" + 
-            "description.\n" +
+            "- The number of items in your inventory and\n" + 
+            "the types of items you see cannot be changed.\n" +
+            "- Each item provides a different buff to the \n" + 
+            "player, which is shown through the description.\n" +
             "- If you use an item when there's none of it \n" + 
             "left, it will start the next attack and waste\n" +
             "your turn. Don't be dumb!";
@@ -967,7 +970,8 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         instructionsPages[5] = 
             "Instructions - Page 6:\n\n" +
             "MERCY:\n" +
-            "    - If MERCY is chosen, the player forfeits the fight and will return to the main menu.\n" +
+            "- If MERCY is chosen, the player forfeits the\n"+
+            "fight and will return to the main menu.\n" +
             "- After any of these options (but MERCY),\n" + 
             "the player's turn ends and then it's the \n" + 
             "boss's turn.\n\n";
