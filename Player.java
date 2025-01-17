@@ -70,7 +70,7 @@ public class Player {
         items.clear();
         items.add(new Item("Health Potion","Heals 40 HP.",40,3));
         items.add(new Item("Shield Token","Nullifies all damage twice.",0,1));
-        items.add(new Item("Power Flask","Your next attack deals +150% damage.",0,2));
+        items.add(new Item("Power Flask","Next attack does +15 base damage.",0,2));
         items.add(new Item("Grebbory's Assignment Resubmission", "Heals all missing HP.",1000000,1));
 
         selectedItemIndex = 0;
