@@ -77,6 +77,8 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
     private Image homingImage;
     private Image laserImage;
     private Image laserWarningImage;
+    private Image winImage;
+    private Image loseImage;
 
     // variables for scaled images to avoid rescaling every frame, reduce lag
     private Image fightButtonScaled;
@@ -337,6 +339,13 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
             e.printStackTrace();
         }
 
+        // boss image
+        try {
+            winImage = ImageIO.read(getClass().getResource("/Images/win.png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         // player's normal heart image
         try {
             originalPlayerImage = ImageIO.read(getClass().getResource("/Images/heart.png"));
@@ -577,7 +586,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         player = new Player(playerX, playerY, 25, 25, difficultyHP[difficultyIdx], playerImage, flashImage, playerImage, flashImage, jetImage, jetFlashImage);
 
         // create the Boss object and configure properties
-        boss = new Boss("GREBBORY ANTONY", 100, bossImage, 0, 0, 150, 150);
+        boss = new Boss("GREBBORY ANTONY", 1, bossImage, 0, 0, 150, 150);
 
         // initialize player's inventory (this might add items, potions, etc.)
         player.initializeInventory();
@@ -1195,50 +1204,12 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
 
     // draws the overlay for when the player wins
     private void drawWinScreen(Graphics g) {
-        String winText;
-        int winTextWidth;
-        String prompt;
-        int promptWidth;
-
-        g.setColor(new Color(0, 0, 0, 200));
-        g.fillRect(0, 0, getWidth(), getHeight());
-        g.setColor(Color.WHITE);
-        g.setFont(dialogFont);
-
-        // draw the message when player wins
-        winText = "YOU WON! GREB WAS DEFEATED.";
-        winTextWidth = g.getFontMetrics().stringWidth(winText);
-        g.drawString(winText, getWidth() / 2 - winTextWidth / 2, getHeight() / 2);
-
-        // draw the navigation prompt
-        g.setFont(uiFont);
-        prompt = "[Z TO MAIN MENU]";
-        promptWidth = g.getFontMetrics().stringWidth(prompt);
-        g.drawString(prompt, getWidth() / 2 - promptWidth / 2, getHeight() / 2 + 50);
+        g.drawImage(winImage, 0, 0, getWidth(), getHeight(), null);
     }
 
     // draws the overlay for when the player loses
     private void drawLoseScreen(Graphics g) {
-        String loseText;
-        int loseTextWidth;
-        String prompt;
-        int promptWidth;
-
-        g.setColor(new Color(0, 0, 0, 200));
-        g.fillRect(0, 0, getWidth(), getHeight());
-        g.setColor(Color.WHITE);
-        g.setFont(dialogFont);
-
-        // draw the message when player loses
-        loseText = "YOU LOST! YOUR HP REACHED 0.";
-        loseTextWidth = g.getFontMetrics().stringWidth(loseText);
-        g.drawString(loseText, getWidth() / 2 - loseTextWidth / 2, getHeight() / 2);
-
-        // draw the navigation prompt
-        g.setFont(uiFont);
-        prompt = "[Z TO MAIN MENU]";
-        promptWidth = g.getFontMetrics().stringWidth(prompt);
-        g.drawString(prompt, getWidth() / 2 - promptWidth / 2, getHeight() / 2 + 50);
+        g.drawImage(loseImage, 0, 0, getWidth(), getHeight(), null);
     }
 
     // draws the item selection screen
@@ -1513,6 +1484,14 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         if (player.isDead()) {
             bullets.clear();
             playerBullets.clear();
+
+            // stop current music
+            if (clip != null && clip.isRunning()) {
+                clip.stop();
+            }
+            // play defeat sound effect
+            playSoundEffect("Sounds/defeat.wav"); 
+
             setCurrentState(State.LOSE);
         }
     }
@@ -1704,6 +1683,12 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
 
         // if that last hit defeated the boss, go to WIN
         if (boss.isDefeated()) {
+            // stop current music
+            if (clip != null && clip.isRunning()) {
+                clip.stop();
+            }
+            // play a victory sound effect
+            playSoundEffect("Sounds/victory.wav");
             setCurrentState(State.WIN);
         } else {
             dialogText = hitResult.toUpperCase();
@@ -1930,6 +1915,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
                 playSoundEffect("Sounds/hover.wav");
             } else if (code == KeyEvent.VK_Z) {
                 choice = MENUOPTIONS[selectedOption];
+                playSoundEffect("Sounds/click.wav");
                 if (choice.equals("FIGHT")) {
                     startFightTiming();
                 } else if (choice.equals("ACT")) {
@@ -2039,6 +2025,9 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
             if (code == KeyEvent.VK_Z) {
                 setCurrentState(State.MAIN_MENU);
                 resetGame();
+
+                // resume background music when leaving win/lose screen
+                playMusic("Sounds/menumusic.wav");
             }
         }
     }
