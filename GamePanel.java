@@ -182,8 +182,8 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
     private boolean tempDamageBoostActive = false;
 
     // music player variable
-    static Clip clip;
-    static Clip effectClip;
+    public static Clip clip;
+    public static Clip effectClip;
 
     // constructor for the gamepnael, sets up various listeners, initializes timer, fonts, images, etc
     public GamePanel() {
