@@ -2,7 +2,7 @@
 * Author: Michael Zhang and Bryan Yao
 * Date: 2025-01-16
 * Description: This class implements a random projectile attack pattern from the boss.
-* It manages the spawning and behavior of the randomly generated bullets move at a random direction/speed.
+* It manages the spawning and behavior of the randomly generated bullets that move in a random direction/speed.
 * The attack pattern also changes depending on the amount of cycles the boss has done through his attack pattersns.
 */
 
