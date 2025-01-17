@@ -59,9 +59,13 @@ public class VerticalLaserAttack extends AttackPattern {
         lasersActive = false;
         singlePhaseActivated = false;
 
-        // if cycle >= 1, everything is faster (game gets harder as game goes on)
+
+        // if cycle >= 1, everything is faster. also, play warning sound based on game cycle
         if (panel.getCycleCount() >= 1) {
+            GamePanel.playSoundEffect("Sounds/fastcharge.wav");
             damage += 10;
+        } else {
+            GamePanel.playSoundEffect("Sounds/normalcharge.wav");
         }
 
         patterns = new int[totalSteps][lanesPerStep]; // invisible steps on the bottom of the board to figure out where the lasers attack
@@ -111,7 +115,7 @@ public class VerticalLaserAttack extends AttackPattern {
                     // done after the FINAL_PHASE_DURATION
                     finished = true;
                 } else {
-                    handleFinalLaserLogic(now);
+                    handleFinalLaser(now);
                 }
             }
             return;
@@ -120,14 +124,27 @@ public class VerticalLaserAttack extends AttackPattern {
         elapsed = now - phaseStartTime;
 
         // change how fast the game is for the main patterns depending on how long into the attack pattern the player is
-        wTime = (panel.getCycleCount() >= 1) ? FAST_WARNING_TIME : NORMAL_WARNING_TIME;
-        aTime = (panel.getCycleCount() >= 1) ? FAST_ACTIVE_TIME  : NORMAL_ACTIVE_TIME;
+        if (panel.getCycleCount() >= 1){
+            wTime = FAST_WARNING_TIME;
+        } else {
+            wTime = NORMAL_WARNING_TIME;
+        }
+        if (panel.getCycleCount() >= 1){
+            aTime = FAST_ACTIVE_TIME;
+        } else {
+            aTime = NORMAL_ACTIVE_TIME;
+        }
 
         if (warning) { // warning of laser
             if (elapsed > wTime) {
                 warning = false;
                 lasersActive = true;
                 phaseStartTime = now;
+                if (panel.getCycleCount() >= 1) {
+                    GamePanel.playSoundEffect("Sounds/fastlaser.wav");
+                } else {
+                    GamePanel.playSoundEffect("Sounds/normallaser.wav");
+                }
             }
         } else if (lasersActive) {
             if (elapsed > aTime) {
@@ -136,6 +153,12 @@ public class VerticalLaserAttack extends AttackPattern {
                     warning = true;
                     lasersActive = false;
                     phaseStartTime = now;
+
+                    if (panel.getCycleCount() >= 1) {
+                        GamePanel.playSoundEffect("Sounds/fastcharge.wav");
+                    } else {
+                        GamePanel.playSoundEffect("Sounds/normalcharge.wav");
+                    }
                 }
             } else {
                 // actively draw lasers for the current pattern
@@ -161,7 +184,7 @@ public class VerticalLaserAttack extends AttackPattern {
     }
 
     // handles the final single-laser logic over 10 seconds where code spawns a warning where the player is, waits, then spawns the laser and continue/repeat
-    private void handleFinalLaserLogic(long now) {
+    private void handleFinalLaser(long now) {
         long laserActiveTime;
 
         if (finalLaserWarning) {
@@ -170,6 +193,8 @@ public class VerticalLaserAttack extends AttackPattern {
                 // convert to active laser
                 finalLaserWarning = false;
                 finalLaserActive = true;
+
+                GamePanel.playSoundEffect("Sounds/normallaser.wav");
             }
         }
         else if (finalLaserActive) {
@@ -183,6 +208,8 @@ public class VerticalLaserAttack extends AttackPattern {
                 } else {
                     // Laser duration finished, spawn next warning
                     spawnFinalLaserWarning(now);
+
+                    GamePanel.playSoundEffect("Sounds/finalcharge.wav");
                 }
             }
             else {
@@ -209,6 +236,9 @@ public class VerticalLaserAttack extends AttackPattern {
         finalLaserWarning = true;
         finalLaserActive = false;
         finalLaserWarnStart = now;
+
+        // play sound effect for warning
+        GamePanel.playSoundEffect("Sounds/finalcharge.wav");
 
         // figure out the lane where user is
         box = panel.getBattleBox();
