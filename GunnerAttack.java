@@ -183,6 +183,7 @@ public class GunnerAttack extends AttackPattern {
                         // remove just that small box and the bullet
                         boxIt.remove();
                         pbit.remove();
+                        GamePanel.playSoundEffect("Sounds/boxbreak.wav");
                         consumed = true;
                         break;
                     }
