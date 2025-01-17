@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.Random;
 import java.awt.*;
 
-public class RandomProjectileAttack extends AttackPattern { //child of AttackPattern class
+public class RandomProjectileAttack extends AttackPattern {
     private int projectilesSpawned = 0;
     private int maxProjectiles = 100; 
     private long lastSpawnTime;
