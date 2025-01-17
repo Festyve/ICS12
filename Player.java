@@ -16,7 +16,7 @@ public class Player {
     private int maxHP;
 
     private long invincibleUntil = 0; // timestamp for the players i-frames
-    private int nextAttackBoost = 0;  // boost for next attack
+    public int nextAttackBoost = 0;  // boost for next attack
     private boolean flashing = false; // flashing state to indicate when player takes damage
     private int flashTimer = 0; // hold how long player image flashes for
 
@@ -95,6 +95,11 @@ public class Player {
     public void setMaxHP(int newMaxHP) {
         this.maxHP = newMaxHP;
         this.hp = newMaxHP;
+    }
+
+    // sets the player's attack buff
+    public void setAttackBuff(int buffValue){
+        nextAttackBoost = buffValue;
     }
 
     // sets the player image
@@ -268,7 +273,7 @@ public class Player {
                 shieldTurns = 2;
                 i.useOne();
             } else if (i.getName().equals("Power Flask")) {
-                nextAttackBoost = 15; 
+                nextAttackBoost += 15; 
                 i.useOne();
             } else if (i.getName().equals("Grebbory's Assignment Resubmission")){
                 hp += i.getHealAmount();
