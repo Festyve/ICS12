@@ -1,7 +1,7 @@
 /*
  * Author: Michael Zhang and Bryan Yao
  * Date: 2024-01-16
- * Description: This class establishes the main frame for the Pong game. It sets up the frame properties,
+ * Description: This class establishes the main frame for the game. It sets up the frame properties,
  * including adding the GamePanel, setting the title, size and default behaviours.
  */
 import javax.swing.JFrame;
