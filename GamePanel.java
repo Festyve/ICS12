@@ -280,7 +280,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
     }
 
     // plays the sound effect
-    static void playSoundEffect(String file){
+    public static void playSoundEffect(String file){
         File soundFile;
         AudioInputStream audioInput;
         Clip clip;
